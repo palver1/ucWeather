@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "../libs/curl/include/curl/curl.h"
 
-#include "../include/json_parser.h"
+#include "../libs/lib_json_parser/json_parser.h"
 
 char API[50];
 char URL[200];
@@ -32,19 +32,23 @@ int main(void)
 
     curl = curl_easy_init();
     if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, URL);
+        curl_easy_setopt(curl, CURLOPT_URL, URL);
         /* cache the CA cert bundle in memory for a week */
-        curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
+        // curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
 
         /* Perform the request, res gets the return code */
         res = curl_easy_perform(curl);
         /* Check for errors */
-        if(res != CURLE_OK)
-        fprintf(stderr, "curl_easy_perform() failed: %s\n",
-            curl_easy_strerror(res));
+        if(res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
 
         curl_easy_cleanup(curl);
     }
+
+    /* SAVE DATA TO THE HISTORY ============================================================================== */
+    puts("\n");
+    printf("ANSWER: %s\n", (char*)curl);
 
     curl_global_cleanup();
 
