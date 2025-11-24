@@ -1,0 +1,6 @@
+# directories
+out/
+
+# files
+api.key
+history.data
