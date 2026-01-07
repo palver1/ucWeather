@@ -1,7 +1,18 @@
 # String functions
 Creator: Palver  
 Date of creation: 30.12.2025  
-Minimal version: C99  
+Standard: C99  
+
+## How to use
+Example:  
+```c
+#include "pvr_string.h" // include prototypes
+
+int main() {return 0;}
+
+#define PVR_STRING_IMPLEMENTATION
+#include "pvr_string.h" // include implementations
+```
 
 ## Documentation
 ```c

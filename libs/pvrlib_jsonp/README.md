@@ -1,4 +1,19 @@
 # JSON Parser
+Creator: Palver  
+Date of creation: 08.11.2025
+Standard: C99  
+
+## How to use
+Example:
+```c
+#include "pvr_jsonp.h" // include prototypes
+
+int main() {return 0;}
+
+#define PVR_JSONP_IMPLEMENTATION
+#include "pvr_jsonp.h" // include implementations
+```
+
 ## Documentation
 ```c
 int PVR_json_find_key(char buffer_json[], char key[]);

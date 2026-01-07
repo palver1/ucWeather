@@ -200,3 +200,7 @@ void define_weather_icon(char *weather_condition, char *weather_icon) {
        strcpy(weather_icon, "🌩️"); }
 }
 
+#define PVR_JSONP_IMPLEMENTATION
+#include "../libs/pvrlib_jsonp/pvr_jsonp.h"
+#define PVR_STRING_IMPLEMENTATION
+#include "../libs/pvrlib_string/pvr_string.h"

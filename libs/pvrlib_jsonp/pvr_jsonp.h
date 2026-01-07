@@ -1,9 +1,11 @@
-/* Made by Palver. 08.11.2025. C99
- *
- */
+/* Made by Palver. 08.11.2025. C99 */
 
-#ifndef PVR_JSONP_H
-#define PVR_JSONP_H
+#ifndef PVR_JSONP_IMPLEMENTATION
+int PVR_json_find_key(char buffer_json[], char key[]);
+char *PVR_json_get_value(char buffer_json[], char key[]);
+#endif
+
+#ifdef PVR_JSONP_IMPLEMENTATION
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,7 +14,7 @@
 #include <stdio.h>
 
 /* Searches for a key. Returns index or -1. */
-static inline int PVR_json_find_key(char buffer_json[], char key[]) {
+int PVR_json_find_key(char buffer_json[], char key[]) {
     bool is_str_found = false;
     int first_index;
     size_t i_buffer = 0;
@@ -46,7 +48,7 @@ static inline int PVR_json_find_key(char buffer_json[], char key[]) {
 }
 
 /* Returns a value by a key. */
-static inline char *PVR_json_get_value(char buffer_json[], char key[]) {
+char *PVR_json_get_value(char buffer_json[], char key[]) {
     int index_key = PVR_json_find_key(buffer_json, key);
     int val_index_start;
     int val_index_end;
@@ -94,6 +96,4 @@ static inline char *PVR_json_get_value(char buffer_json[], char key[]) {
         return value;
     } else { return NULL; }
 }
-
-static inline int kek(int num) { return num * 2; }
 #endif
