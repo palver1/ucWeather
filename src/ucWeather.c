@@ -4,11 +4,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <conio.h>
 
 #include "../libs/curl/include/curl/curl.h"
 #include "../libs/pvrlib_jsonp/pvr_jsonp.h"
 #include "../libs/pvrlib_string/pvr_string.h"
 
+#define VERSION "v1.0"
 
 /* PROTOTYPES */
 size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
@@ -29,9 +31,77 @@ int main(int argc, char *argv[]) {
     SetConsoleOutputCP(CP_UTF8);
     #endif
 
+    /* MAKE ROOT PATH ============================================================================== */
+    /* Get exe path*/
+    char exe_path[MAX_PATH];
+
+    int exe_path_len = GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+    if (exe_path_len == 0) {
+        perror("Error: couldn't get the program's path."); return(EXIT_FAILURE);
+    } else if (exe_path_len >= MAX_PATH) {
+        perror("Error: path is truncated (exe_path is too small)"); return(EXIT_FAILURE);
+    }
+
+    /* Remove .exe file from the path */
+    int last_slash_index;
+    for (int i = 0; i < exe_path_len; i++) {
+        if (exe_path[i] == '\\') {
+            last_slash_index = i+1;
+        }
+    }
+    exe_path[last_slash_index] = '\0';
+
+    /* Make the path to api.key file */
+    char path_file_api[MAX_PATH];
+    #ifdef DEBUG
+    snprintf(path_file_api, MAX_PATH, "%s%s", exe_path, "..\\api.key");
+    #else // RELEASE
+    snprintf(path_file_api, MAX_PATH, "%s%s", exe_path, "api.key");
+    #endif
+
     /* MAKE URL ============================================================================== */
-    FILE *file_api = fopen("out/api.key", "r"); //TODO: fix relative path problem
-    if (file_api == NULL) { perror("ERROR: Unable to load the api.key file"); exit(EXIT_FAILURE); }
+    FILE *file_api = fopen(path_file_api, "r");
+    if (file_api == NULL) {
+        perror("api.key file not found. Would you like to create one?\n"); 
+        printf("Yes [y] | No [n]\n");
+
+        char answer = getchar();
+        if (answer == 'y') {
+            fclose(file_api);
+            /* CREATE A NEW API.KEY FILE */
+            file_api = fopen(path_file_api, "w");
+            if (file_api == NULL) {perror("Failed to create a file"); exit(EXIT_FAILURE);}
+
+            printf("Enter your WeatherAPI key:\n");
+            char api_key[100] = {0};
+            PVR_clear_nlc();
+            fgets(api_key, 100, stdin);
+            api_key[strcspn(api_key, "\n")] = '\0';
+
+            size_t f_written = fwrite(api_key, sizeof(char), strlen(api_key), file_api);
+            if (f_written != strlen(api_key)) {perror("Failed to write into a file"); exit(EXIT_FAILURE);}
+
+            fclose(file_api);
+
+            /* REOPEN FILE TO READ THE DATA */
+            // check if api was entered, delete the file if didn't
+            file_api = fopen(path_file_api, "r");
+            const short file_content_size = 100;
+            char file_content[file_content_size];
+            size_t f_read = fread(file_content, sizeof(char), file_content_size, file_api);
+            if (!f_read) {
+                fclose(file_api);
+                char str_del_api_file[MAX_PATH + 4];
+                snprintf(str_del_api_file, MAX_PATH + 4, "%s%s", "del ", path_file_api);
+                system(str_del_api_file);
+                perror("Api key was not saved");
+                exit(EXIT_FAILURE);
+            }
+            rewind(file_api);
+        } else if (answer == 'n') {
+            exit(EXIT_FAILURE);
+        }
+    }
     
     fread(API, 50, 1, file_api);
     strcpy(API, PVR_replace(API, '\n', '\0'));
@@ -61,7 +131,9 @@ int main(int argc, char *argv[]) {
         curl_easy_cleanup(curl);
     }
 
-    /* SAVE DATA TO THE HISTORY ============================================================================== */
+    // puts("\nPress any key to close");
+    // getch();
+
     return 0;
 }
 
@@ -73,7 +145,9 @@ size_t write_callback(char *response, size_t size, size_t nmemb, void *userdata)
 
     define_weather_icon(weather_condition, weather_icon);
 
-    puts("-Weather------------------------------------------");
+    char tui_title[60];
+    snprintf(tui_title, 60, "%s%s%s", "-Weather ", VERSION, " ------------------------------------------");
+    printf("%s\n", tui_title);
     // Structured respose
     // Location
     

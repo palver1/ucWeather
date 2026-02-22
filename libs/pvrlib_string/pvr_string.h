@@ -2,6 +2,7 @@
 
 #ifndef PVR_STRING_IMPLEMENTATION
 char* PVR_replace(char *str, char char_old, char char_new);
+void PVR_clear_nlc();
 #endif
 
 #ifdef PVR_STRING_IMPLEMENTATION
@@ -19,6 +20,13 @@ char* PVR_replace(char *str, char char_old, char char_new) {
     }
 
     return str;
+}
+
+
+/* Clears the buffer from new line character, which makes text input not work */
+void PVR_clear_nlc(){
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 #endif

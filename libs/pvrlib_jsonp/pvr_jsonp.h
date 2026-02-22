@@ -3,9 +3,9 @@
 #ifndef PVR_JSONP_IMPLEMENTATION
 int PVR_json_find_key(char buffer_json[], char key[]);
 char *PVR_json_get_value(char buffer_json[], char key[]);
-#endif
-
-#ifdef PVR_JSONP_IMPLEMENTATION
+// #endif
+//
+// #ifdef PVR_JSONP_IMPLEMENTATION
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,8 +15,6 @@ char *PVR_json_get_value(char buffer_json[], char key[]);
 
 /* Searches for a key. Returns index or -1. */
 int PVR_json_find_key(char buffer_json[], char key[]) {
-    bool is_str_found = false;
-    int first_index;
     size_t i_buffer = 0;
     size_t i_str    = 0;
 
@@ -29,15 +27,10 @@ int PVR_json_find_key(char buffer_json[], char key[]) {
 
     while (buffer_json[i_buffer] != '\0') {
         if (buffer_json[i_buffer] == key_with_colon[i_str]) {
-            if (i_str == 0) {
-                first_index = i_buffer;
-            }
-            
             i_str++;
         } else {i_str = 0;}
 
         if ((i_str + 1) == key_len + key_syntax_len) {
-            // return first_index;
             return i_buffer; // return index of a colon
         }
 

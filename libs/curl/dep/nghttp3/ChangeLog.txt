@@ -1,316 +1,171 @@
-commit 59ec79928d199ecae3d52aa26539fb8feaec4041
+commit d326f4c1eb3f6a780d77793b30e16756c498f913
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-23
+AuthorDate: 2026-01-20
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-23
+CommitDate: 2026-01-20
 
     Bump package and library versions
 
-commit ca8cd484b85e8aad9566291bce866442c0c5836e
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-23
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-23
-
-    Update AUTHORS
-
-commit a9d213450ab8882ae26a55c54110b9c1393b307e
-Merge: f263663 d178f19
+commit b154e9e0aaf1d505ad36a22820389d6044148986
+Merge: 38854cf 03edf38
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-11-22
+AuthorDate: 2026-01-19
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-11-22
+CommitDate: 2026-01-19
 
-    Merge pull request #411 from ngtcp2/http-designated-init-table
+    Merge pull request #454 from ngtcp2/add-const
     
-    nghttp3_http: Define tables with designated initializers
+    Add const to nghttp3_frame_settings.local_settings
 
-commit d178f198400cd41c7f97cb1f41ccfe33bf35ab94
+commit 03edf382adef16c57538643d1cc4dda13f4360ec
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-22
+AuthorDate: 2026-01-19
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-22
+CommitDate: 2026-01-19
 
-    nghttp3_http: Define tables with designated initializers
+    Add const to nghttp3_frame_settings.local_settings
 
-commit f263663ecdc4d43b7533b5ce7d3f79cd78a548a6
-Merge: 2d5dd9c 419ff9d
+commit 38854cf36c5e9bd0cf42500b95cc53505d17b893
+Merge: bac3594 ce75e28
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-11-11
+AuthorDate: 2026-01-19
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-11-11
+CommitDate: 2026-01-19
 
-    Merge pull request #410 from ngtcp2/gha-cancel-stale-job
+    Merge pull request #453 from ngtcp2/eliminate-aux
     
-    GHA: Cancel stale job
+    Move aux objects into the individual frames
 
-commit 419ff9d751a61f36d10d6aab411a1b2982016f32
+commit ce75e284a75fe0824ca1fd2767c852ce2067988e
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-11
+AuthorDate: 2026-01-19
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-11
+CommitDate: 2026-01-19
 
-    GHA: Cancel stale job
+    Move aux objects into the individual frames
     
-    We have severely limited resources in terms of GitHub Actions.  We
-    cannot run full 2 build workflows at the same time.  To speed up the
-    latest build, we need to cancel the previous jobs, but it is too
-    tedious.  Let's cancel those stale jobs automatically.  No need to
-    cancel jobs on main because they should finish once committed.
+    Move aux objects into the individual frames.  Remove
+    nghttp3_frame_entry and use ngtcp2_frame directly.
 
-commit 2d5dd9c2cfd1cbc1d71a8ff0d6b5e2d0ffae4b44
-Merge: 937e355 0c50175
+commit bac359420051c6b9e309997761f204dd1ecaaf4a
+Merge: 8ff188f dc67ec9
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-11-03
+AuthorDate: 2026-01-18
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-11-03
+CommitDate: 2026-01-18
 
-    Merge pull request #408 from ngtcp2/mkhufftbl-fix-missing-flags
+    Merge pull request #452 from ngtcp2/update-ksl
     
-    mkhufftbl.py: Add the missing flags
+    ksl: Port ngtcp2 changes
 
-commit 0c50175fb95d2c35b60ce261b417ab633e55559c
+commit dc67ec9d2d0331934bfd0c0a9228b61aa2cf842d
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-03
+AuthorDate: 2026-01-18
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-03
+CommitDate: 2026-01-18
 
-    mkhufftbl.py: Add the missing flags
+    ksl: Port ngtcp2 changes
 
-commit 937e355deb9922c6d89d8c0ae1bc99c7665340f2
-Merge: 2818856 220118c
+commit 8ff188f532ede172c2f7d5f2d3b02646e1c84fd7
+Merge: 66ce2d8 e545d43
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-11-03
+AuthorDate: 2026-01-08
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-11-03
+CommitDate: 2026-01-08
 
-    Merge pull request #407 from ngtcp2/qpack-indexing-strategy
+    Merge pull request #451 from ngtcp2/strlen-lit
     
-    Qpack indexing strategy
+    Introduce nghttp3_strlen_lit
 
-commit 220118c2283723687a17c71d69f3ecda5553ba82
+commit e545d43f9de1511b04b6ed650cf788c0335e65ef
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-03
+AuthorDate: 2026-01-08
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-03
+CommitDate: 2026-01-08
 
-    Add qpack_indexing_strat to nghttp3_settings
+    Introduce nghttp3_strlen_lit
 
-commit 7bf10ccfe1f6b0a11f0c78c847b1187b9160849e
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-02
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-03
-
-    qpack: Add indexing strategy
-    
-    The default indexing strategy for fields that are not defined in
-    nghttp3_qpack_token is not index those fields.  The common fields are
-    often included in nghttp3_qpack_token, so this keeps the dynamic table
-    from discarding those fields by inserting the unpopular fields.
-    NGHTTP3_NV_FLAG_TRY_INDEX allows application to selectively index
-    those fields.  This is a good strategy for the clients and the origin
-    servers that have a best knowledge of the HTTP fields they transmit.
-    However, for intermediaries, they might not have such knowledge, and
-    it is often better to index everything.  They can achieve this with
-    newly introduced NGHTTP3_QPACK_INDEXING_STRAT_EAGER, which tells QPACK
-    encoder to encode all fields not defined in nghttp3_qpack_token.
-
-commit 28188569ca6d8f1d3e040bb66ec25a57d2762513
-Author:     Copilot <198982749+Copilot@users.noreply.github.com>
-AuthorDate: 2025-11-02
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-11-02
-
-    Remove unused enum values from nghttp3_stream_http_state (#405)
-    
-    Remove unused enum values NGHTTP3_HTTP_STATE_REQ_BEGIN and NGHTTP3_HTTP_STATE_RESP_BEGIN
-    
-    Co-authored-by: tatsuhiro-t <404610+tatsuhiro-t@users.noreply.github.com>
-
-commit d0a59cec06e0a9cb810b0913177eb3450476be3b
-Merge: 31b9ebf 0c90689
+commit 66ce2d85fda454fce31665667304838c84548396
+Merge: 0b76bd6 b383305
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-11-02
+AuthorDate: 2026-01-07
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-11-02
+CommitDate: 2026-01-07
 
-    Merge pull request #406 from ngtcp2/optimize-qpack-huffman-decoding
+    Merge pull request #450 from ngtcp2/remove-submit-request2
     
-    qpack: Optimize huffman decoding a bit
+    Remove nghttp3_conn_submit_request2
 
-commit 0c906891d6af263e554ab268fd48e839ea8f650e
+commit b383305a5035f95ef9ab76feb6e59397231eefc7
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-11-02
+AuthorDate: 2026-01-07
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-11-02
+CommitDate: 2026-01-07
 
-    qpack: Optimize huffman decoding a bit
+    Remove nghttp3_conn_submit_request2
+    
+    Defaulting incremental = 1 for client-side stream scheduling fixes
+    most of the issue in client side.  I still do not have strong evidence
+    that necessitates to add new function that accepts the optional
+    priority.
 
-commit 31b9ebfc7c1b07765ba8cb2c9666f4e114dbd696
-Merge: 172d66a e0bb672
+commit 0b76bd63dc14fcab98910154e1866b2ac31655af
+Merge: 354c223 d707c7a
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-10-31
+AuthorDate: 2026-01-05
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-10-31
+CommitDate: 2026-01-05
 
-    Merge pull request #404 from ngtcp2/update-ksl
+    Merge pull request #449 from ngtcp2/req-inc-default
     
-    Port ngtcp2_ksl changes
+    Make client-side scheduling incremental by default
 
-commit e0bb672a6401813d8c5235545f05726e475355c5
+commit d707c7add286ebd90d3545beaf25f683a12b81a8
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-10-31
+AuthorDate: 2026-01-05
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-10-31
+CommitDate: 2026-01-05
 
-    Port ngtcp2_ksl changes
+    Make client-side scheduling incremental by default
+    
+    We have added nghttp3_conn_submit_request2 to provide client-side
+    scheduling hint.  Without the hint, the default is not incremental.
+    This means the large upload may starve the other requests by default.
+    It would be desirable to avoid it with the default configuration.
 
-commit 172d66aa1c841208764c275acc96fe16cf4e510c
-Merge: 164fbfa 74a5bfe
+commit 354c2233bd84907863a57fbe967caad93e0bd722
+Merge: 3b64a00 3892a1d
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-10-31
+AuthorDate: 2026-01-05
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-10-31
+CommitDate: 2026-01-05
 
-    Merge pull request #403 from ngtcp2/update-map
+    Merge pull request #448 from ngtcp2/client-side-stream-scheduling
     
-    Port ngtcp2_map changes
+    Add nghttp3_conn_submit_request2 to set client-side scheduling hint
 
-commit 74a5bfed2806bd44760b7096f6b003f3884abe39
+commit 3892a1db82f0cbd798d57a9648a7e4329b2303e2
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-10-31
+AuthorDate: 2025-12-27
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-10-31
+CommitDate: 2026-01-05
 
-    Port ngtcp2_map changes
+    Add nghttp3_conn_submit_request2 to set client-side scheduling hint
 
-commit 164fbfa0f4da67d4c112bc6e5260846b5254b3cb
-Merge: 23107ac a153fb5
-Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-10-24
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-10-24
-
-    Merge pull request #402 from ngtcp2/doc-rand
-    
-    doc: Recommend specifying rand callback
-
-commit a153fb5f0505b4106d3ae73aa00f505e234504fe
+commit 3b64a00d2086c98dd85770998da44ffa59803b98
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-10-24
+AuthorDate: 2025-12-23
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-10-24
+CommitDate: 2025-12-23
 
-    doc: Recommend specifying rand callback
-
-commit 23107ace74c1a9eb55495558ca9632cd122cc47d
-Merge: f227d0a 703ce1a
-Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-10-24
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-10-24
-
-    Merge pull request #401 from ngtcp2/update-map
+    Revert "Update AUTHORS"
     
-    Port ngtcp2_map changes
+    This reverts commit 67b64abf3bfa1bf6520c7abfb428c76cd7e40ff4.
 
-commit 703ce1a3d1a4d4c95295633a8aaa8c965c07988d
+commit aa62ed82bb8fd24a71700bdf9c7148cb603f6826
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-10-24
+AuthorDate: 2025-12-23
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-10-24
-
-    Port ngtcp2_map changes
-
-commit f227d0a1459a905bac00e4627f878639e45165b6
-Author:     Michal Kovac <68376920+mk185147@users.noreply.github.com>
-AuthorDate: 2025-10-03
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-10-03
-
-    Replace POPCNT-based ispow2 with portable bitwise implementation to prevent illegal instruction crashes (#400)
-    
-    fix that popcnt intristics is not always available
-    
-    Co-authored-by: mk185147_ncrvoyix <michal.kovac@ncrvoyix.com>
-
-commit 055e42d090174c22db9763079637c732c56ae0d4
-Author:     Copilot <198982749+Copilot@users.noreply.github.com>
-AuthorDate: 2025-09-30
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-09-30
-
-    Fix typo in mkstatichdtbl.py documentation comment (#398)
-    
-    Fix typo in mkstatichdtbl.py comment: "scripts" -> "script"
-    
-    Co-authored-by: tatsuhiro-t <404610+tatsuhiro-t@users.noreply.github.com>
-
-commit bb08bb776ebc5f87af73d89971dc4911ceabb6a3
-Merge: ef906d3 4efb51d
-Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-09-28
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-09-28
-
-    Merge pull request #397 from ngtcp2/remove-redundant-semicolon
-    
-    Remove redundant semicolon
-
-commit 4efb51d62800399dd4956f5c0f9333a12cfba35e
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-09-28
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-09-28
-
-    Remove redundant semicolon
-
-commit ef906d34e2919764e4b877b05176079f512efe63
-Merge: 72afb40 442ce06
-Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-09-24
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-09-24
-
-    Merge pull request #396 from ngtcp2/revert-395-partially
-    
-    Revert #395 partially
-
-commit 442ce06cdee710243032758ccaa54e483f835291
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-09-24
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-09-24
-
-    Revert #395 partially
-    
-    nghttp3_ksl.h could be used from C++ code which requires explicit
-    cast.
-
-commit 72afb404a66104efd23424a7f26b50f647a98374
-Merge: a8b305d 425acb2
-Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2025-09-24
-Commit:     GitHub <noreply@github.com>
-CommitDate: 2025-09-24
-
-    Merge pull request #395 from ngtcp2/remove-redundant-casts
-    
-    Remove redundant casts
-
-commit 425acb2855153892e58a9c26de90767460f8ba01
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-09-24
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-09-24
-
-    Remove redundant casts
-
-commit a8b305dfdb341c235445e36b6dd45a190b8109a4
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2025-09-24
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2025-09-24
+CommitDate: 2025-12-23
 
     Bump package version
