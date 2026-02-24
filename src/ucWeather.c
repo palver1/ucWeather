@@ -15,6 +15,7 @@
 /* PROTOTYPES */
 size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
 void define_weather_icon(char *weather_condition, char *weather_icon);
+void change_date_fromat(char *date);
 
 
 /* MAIN PROCESS */
@@ -145,28 +146,58 @@ size_t write_callback(char *response, size_t size, size_t nmemb, void *userdata)
 
     define_weather_icon(weather_condition, weather_icon);
 
+    /* Weather Data */
+    char country[50];
+    char region[50];
+    char last_updated[50];
+    char temp_c[50];
+    char temp_f[50];
+    char feelslike_c[50];
+    char feelslike_f[50];
+    char wind_kph[50];
+    char wind_dir[50];
+    char windchill_c[50];
+    char windchill_f[50];
+    char humidity[50];
+    char precip_mm[50];
+    char cloud[50];
+
+    strcpy(country, PVR_json_get_value(response, "country"));
+    strcpy(region, PVR_json_get_value(response, "region"));
+    strcpy(last_updated, PVR_json_get_value(response, "last_updated"));
+    change_date_fromat(last_updated);
+    strcpy(temp_c, PVR_json_get_value(response, "temp_c"));
+    strcpy(temp_f, PVR_json_get_value(response, "temp_f"));
+    strcpy(feelslike_c, PVR_json_get_value(response, "feelslike_c"));
+    strcpy(feelslike_f, PVR_json_get_value(response, "feelslike_f"));
+    strcpy(wind_kph, PVR_json_get_value(response, "wind_kph"));
+    strcpy(wind_dir, PVR_json_get_value(response, "wind_dir"));
+    strcpy(windchill_c, PVR_json_get_value(response, "windchill_c"));
+    strcpy(windchill_f, PVR_json_get_value(response, "windchill_f"));
+    strcpy(humidity, PVR_json_get_value(response, "humidity"));
+    strcpy(precip_mm, PVR_json_get_value(response, "precip_mm"));
+    strcpy(cloud, PVR_json_get_value(response, "cloud"));
+
     char tui_title[60];
     snprintf(tui_title, 60, "%s%s%s", "-Weather ", VERSION, " ------------------------------------------");
     printf("%s\n", tui_title);
-    // Structured respose
-    // Location
     
-    printf("🌎 %s. %s.\n", PVR_json_get_value(response, "country"), PVR_json_get_value(response, "region"));
-    printf("🕑 %s\n", PVR_json_get_value(response, "last_updated"));
+    printf("🌎 %s. %s.\n", country, region);
+    printf("🕑 %s\n", last_updated); // TODO: change date format from "YYYY-MM-DD HH:MM" to "DD.MM.YYYY HH:MM"
     printf("%s %s\n", weather_icon, weather_condition);
     printf("🌡️ %s˚c (%s)˚f [Feels %s˚c (%s˚f)]\n",
-           PVR_json_get_value(response, "temp_c"),
-           PVR_json_get_value(response, "temp_f"),
-           PVR_json_get_value(response, "feelslike_c"),
-           PVR_json_get_value(response, "feelslike_f"));
+           temp_c,
+           temp_f,
+           feelslike_c,
+           feelslike_f);
     printf("🍃 %s km\\h %s [Feels %s˚c (%s˚f)]\n",
-           PVR_json_get_value(response, "wind_kph"),
-           PVR_json_get_value(response, "wind_dir"), 
-           PVR_json_get_value(response, "windchill_c"),
-           PVR_json_get_value(response, "windchill_f"));
-    printf("💧 %s \n", PVR_json_get_value(response, "humidity"));
-    printf("☔ %s mm\n", PVR_json_get_value(response, "precip_mm"));
-    printf("☁️ %s \n", PVR_json_get_value(response, "cloud"));
+           wind_kph,
+           wind_dir, 
+           windchill_c,
+           windchill_f);
+    printf("💧 %s \n", humidity);
+    printf("☔ %s mm\n", precip_mm);
+    printf("☁️ %s \n", cloud);
     printf("--------------------------------------------------");
 
     return nmemb;
@@ -272,6 +303,25 @@ void define_weather_icon(char *weather_condition, char *weather_icon) {
        strcpy(weather_icon, "🌩️"); }
     else if (strcmp(weather_condition, "Moderate or heavy snow in areastrcpy(with thunder") == 0) {
        strcpy(weather_icon, "🌩️"); }
+}
+
+void change_date_fromat(char *date) {
+    char year[5];
+    char month[3];
+    char day[3];
+    char hours[3];
+    char minutes[3];
+    
+    // NOTE: Oringinal date format and indecies
+    // 0123456789012345
+    // YYYY-MM-DD HH:MM
+    snprintf(day,     3, "%s", date+8);
+    snprintf(month,   3, "%s", date+5);
+    snprintf(year,    5, "%s", date+0);
+    snprintf(hours,   3, "%s", date+11);
+    snprintf(minutes, 3, "%s", date+14);
+
+    snprintf(date, strlen(date)+1, "%s.%s.%s %s:%s", day, month, year, hours, minutes);
 }
 
 #define PVR_JSONP_IMPLEMENTATION
