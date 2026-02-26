@@ -3,5 +3,6 @@ out/
 devnotes/
 
 # files
+*.txt
 api.key
 history.data

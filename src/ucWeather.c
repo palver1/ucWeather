@@ -16,6 +16,10 @@
 size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
 void define_weather_icon(char *weather_condition, char *weather_icon);
 void change_date_fromat(char *date);
+void wind_dir_to_arrow(char *wind_dir);
+void save_history_data(char* weather_json);
+void load_history_data();
+char* get_path_root();
 
 
 /* MAIN PROCESS */
@@ -34,41 +38,24 @@ int main(int argc, char *argv[]) {
 
     /* MAKE ROOT PATH ============================================================================== */
     /* Get exe path*/
-    char exe_path[MAX_PATH];
-
-    int exe_path_len = GetModuleFileNameA(NULL, exe_path, MAX_PATH);
-    if (exe_path_len == 0) {
-        perror("Error: couldn't get the program's path."); return(EXIT_FAILURE);
-    } else if (exe_path_len >= MAX_PATH) {
-        perror("Error: path is truncated (exe_path is too small)"); return(EXIT_FAILURE);
-    }
-
-    /* Remove .exe file from the path */
-    int last_slash_index;
-    for (int i = 0; i < exe_path_len; i++) {
-        if (exe_path[i] == '\\') {
-            last_slash_index = i+1;
-        }
-    }
-    exe_path[last_slash_index] = '\0';
+    char* path_root = get_path_root();
 
     /* Make the path to api.key file */
     char path_file_api[MAX_PATH];
     #ifdef DEBUG
-    snprintf(path_file_api, MAX_PATH, "%s%s", exe_path, "..\\api.key");
+    snprintf(path_file_api, MAX_PATH, "%s%s", path_root, "..\\api.key");
     #else // RELEASE
-    snprintf(path_file_api, MAX_PATH, "%s%s", exe_path, "api.key");
+    snprintf(path_file_api, MAX_PATH, "%s%s", path_root, "api.key");
     #endif
 
     /* MAKE URL ============================================================================== */
     FILE *file_api = fopen(path_file_api, "r");
     if (file_api == NULL) {
-        perror("api.key file not found. Would you like to create one?\n"); 
-        printf("Yes [y] | No [n]\n");
+        perror("api.key file not found. Create one?\n"
+               "Yes [y] | No [n]\n");
 
-        char answer = getchar();
+        char answer = tolower(getchar());
         if (answer == 'y') {
-            fclose(file_api);
             /* CREATE A NEW API.KEY FILE */
             file_api = fopen(path_file_api, "w");
             if (file_api == NULL) {perror("Failed to create a file"); exit(EXIT_FAILURE);}
@@ -140,65 +127,75 @@ int main(int argc, char *argv[]) {
 
 
 size_t write_callback(char *response, size_t size, size_t nmemb, void *userdata) {
-    char weather_condition[100];
-    strcpy(weather_condition, PVR_json_get_value(response, "text"));
-    char weather_icon[15] = "🪟";
+    /* SOTRE WEATHER DATA */
+    struct weather_data {
+        char country[30];
+        char region[30];
+        char last_updated[30];
+        char weather_icon[15];
+        char weather_condition[100];
+        char temp_c[30];
+        char temp_f[30];
+        char feelslike_c[30];
+        char feelslike_f[30];
+        char wind_kph[30];
+        char wind_dir[30];
+        char windchill_c[30];
+        char windchill_f[30];
+        char humidity[30];
+        char precip_mm[30];
+        char cloud[30];
+    } weather_data;
 
-    define_weather_icon(weather_condition, weather_icon);
 
-    /* Weather Data */
-    char country[50];
-    char region[50];
-    char last_updated[50];
-    char temp_c[50];
-    char temp_f[50];
-    char feelslike_c[50];
-    char feelslike_f[50];
-    char wind_kph[50];
-    char wind_dir[50];
-    char windchill_c[50];
-    char windchill_f[50];
-    char humidity[50];
-    char precip_mm[50];
-    char cloud[50];
+    strcpy(weather_data.country, PVR_json_get_value(response, "country"));
+    strcpy(weather_data.region, PVR_json_get_value(response, "region"));
+    strcpy(weather_data.last_updated, PVR_json_get_value(response, "last_updated"));
+    strcpy(weather_data.weather_condition, PVR_json_get_value(response, "text"));
+    strcpy(weather_data.temp_c, PVR_json_get_value(response, "temp_c"));
+    strcpy(weather_data.temp_f, PVR_json_get_value(response, "temp_f"));
+    strcpy(weather_data.feelslike_c, PVR_json_get_value(response, "feelslike_c"));
+    strcpy(weather_data.feelslike_f, PVR_json_get_value(response, "feelslike_f"));
+    strcpy(weather_data.wind_kph, PVR_json_get_value(response, "wind_kph"));
+    strcpy(weather_data.wind_dir, PVR_json_get_value(response, "wind_dir"));
+    strcpy(weather_data.windchill_c, PVR_json_get_value(response, "windchill_c"));
+    strcpy(weather_data.windchill_f, PVR_json_get_value(response, "windchill_f"));
+    strcpy(weather_data.humidity, PVR_json_get_value(response, "humidity"));
+    strcpy(weather_data.precip_mm, PVR_json_get_value(response, "precip_mm"));
+    strcpy(weather_data.cloud, PVR_json_get_value(response, "cloud"));
 
-    strcpy(country, PVR_json_get_value(response, "country"));
-    strcpy(region, PVR_json_get_value(response, "region"));
-    strcpy(last_updated, PVR_json_get_value(response, "last_updated"));
-    change_date_fromat(last_updated);
-    strcpy(temp_c, PVR_json_get_value(response, "temp_c"));
-    strcpy(temp_f, PVR_json_get_value(response, "temp_f"));
-    strcpy(feelslike_c, PVR_json_get_value(response, "feelslike_c"));
-    strcpy(feelslike_f, PVR_json_get_value(response, "feelslike_f"));
-    strcpy(wind_kph, PVR_json_get_value(response, "wind_kph"));
-    strcpy(wind_dir, PVR_json_get_value(response, "wind_dir"));
-    strcpy(windchill_c, PVR_json_get_value(response, "windchill_c"));
-    strcpy(windchill_f, PVR_json_get_value(response, "windchill_f"));
-    strcpy(humidity, PVR_json_get_value(response, "humidity"));
-    strcpy(precip_mm, PVR_json_get_value(response, "precip_mm"));
-    strcpy(cloud, PVR_json_get_value(response, "cloud"));
+    define_weather_icon(weather_data.weather_condition, weather_data.weather_icon);
+    change_date_fromat(weather_data.last_updated);
+    wind_dir_to_arrow(weather_data.wind_dir);
 
     char tui_title[60];
     snprintf(tui_title, 60, "%s%s%s", "-Weather ", VERSION, " ------------------------------------------");
+
+
+    /* PRINT THE WEATHER DATA */
     printf("%s\n", tui_title);
     
-    printf("🌎 %s. %s.\n", country, region);
-    printf("🕑 %s\n", last_updated); // TODO: change date format from "YYYY-MM-DD HH:MM" to "DD.MM.YYYY HH:MM"
-    printf("%s %s\n", weather_icon, weather_condition);
-    printf("🌡️ %s˚c (%s)˚f [Feels %s˚c (%s˚f)]\n",
-           temp_c,
-           temp_f,
-           feelslike_c,
-           feelslike_f);
-    printf("🍃 %s km\\h %s [Feels %s˚c (%s˚f)]\n",
-           wind_kph,
-           wind_dir, 
-           windchill_c,
-           windchill_f);
-    printf("💧 %s \n", humidity);
-    printf("☔ %s mm\n", precip_mm);
-    printf("☁️ %s \n", cloud);
+    printf("🌎 %s. %s.\n", weather_data.country, weather_data.region);
+    printf("🕑 %s\n", weather_data.last_updated);
+    printf("%s %s\n", weather_data.weather_icon, weather_data.weather_condition);
+    printf("🌡️ %s˚c (%s)˚f  Feels %s˚c (%s˚f)\n",
+           weather_data.temp_c,
+           weather_data.temp_f,
+           weather_data.feelslike_c,
+           weather_data.feelslike_f);
+    printf("🍃 %s km\\h %s       Feels %s˚c (%s˚f)\n",
+           weather_data.wind_kph,
+           weather_data.wind_dir, 
+           weather_data.windchill_c,
+           weather_data.windchill_f);
+    printf("💧 %s \n", weather_data.humidity);
+    printf("☔ %s mm\n", weather_data.precip_mm);
+    printf("☁️ %s \n", weather_data.cloud);
     printf("--------------------------------------------------");
+
+
+    /* UPDATE HISTORY FILE */
+    // save_history_data();
 
     return nmemb;
 }
@@ -206,103 +203,129 @@ size_t write_callback(char *response, size_t size, size_t nmemb, void *userdata)
 
 void define_weather_icon(char *weather_condition, char *weather_icon) {
     if (strcmp(weather_condition, "Overcast") == 0) {
-       strcpy(weather_icon, "☁️"); }
+        strcpy(weather_icon, "☁️"); }
     else if (strcmp(weather_condition, "Sunny") == 0) {
-       strcpy(weather_icon, "☀️"); }
+        strcpy(weather_icon, "☀️"); }
     else if (strcmp(weather_condition, "Clear") == 0) {
-       strcpy(weather_icon, "☀️"); }
+        strcpy(weather_icon, "☀️"); }
     else if (strcmp(weather_condition, "Partly cloudy") == 0) {
-       strcpy(weather_icon, "⛅"); }
+        strcpy(weather_icon, "⛅"); }
     else if (strcmp(weather_condition, "Cloudy") == 0) {
-       strcpy(weather_icon, "☁️"); }
+        strcpy(weather_icon, "☁️"); }
     else if (strcmp(weather_condition, "Mist") == 0) {
-       strcpy(weather_icon, "🌫️"); }
+        strcpy(weather_icon, "🌫️"); }
     else if (strcmp(weather_condition, "Patchy rain nearby") == 0) {
-       strcpy(weather_icon, "🌦️"); }
+        strcpy(weather_icon, "🌦️"); }
     else if (strcmp(weather_condition, "Patchy snow nearby") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Patchy sleet nearby") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Patchy freezing drizzle nearby") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Thundery outbreaks in nearby") == 0) {
-       strcpy(weather_icon, "🌩️"); }
+        strcpy(weather_icon, "🌩️"); }
     else if (strcmp(weather_condition, "Blowing snow") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Blizzard") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Fog") == 0) {
-       strcpy(weather_icon, "🌫️"); }
+        strcpy(weather_icon, "🌫️"); }
     else if (strcmp(weather_condition, "Freezing fog") == 0) {
-       strcpy(weather_icon, "🌫️"); }
+        strcpy(weather_icon, "🌫️"); }
     else if (strcmp(weather_condition, "Patchy light drizzle") == 0) {
-       strcpy(weather_icon, "🌦️"); }
+        strcpy(weather_icon, "🌦️"); }
     else if (strcmp(weather_condition, "Light drizzle") == 0) {
-       strcpy(weather_icon, "🌦️"); }
+        strcpy(weather_icon, "🌦️"); }
     else if (strcmp(weather_condition, "Freezing drizzle") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Heavy freezing drizzle") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Patchy light rain") == 0) {
-       strcpy(weather_icon, "🌦️"); }
+        strcpy(weather_icon, "🌦️"); }
     else if (strcmp(weather_condition, "Light rain") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Moderate rain at times") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Moderate rain") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Heavy rain at times") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Heavy rain") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Light freezing rain") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Moderate or heavy freezing rain") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Light sleet") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Moderate or heavy sleet") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Patchy light snow") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Light snow") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Patchy moderate snow") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Moderate snow") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Patchy heavy snow") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Heavy snow") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Ice pellets") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Light rain shower") == 0) {
-       strcpy(weather_icon, "🌦️"); }
+        strcpy(weather_icon, "🌦️"); }
     else if (strcmp(weather_condition, "Moderate or heavy rain shower") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Torrential rain shower") == 0) {
-       strcpy(weather_icon, "🌧️"); }
+        strcpy(weather_icon, "🌧️"); }
     else if (strcmp(weather_condition, "Light sleet showers") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Moderate or heavy sleet showers") == 0) {
-       strcpy(weather_icon, "🌨️"); }
+        strcpy(weather_icon, "🌨️"); }
     else if (strcmp(weather_condition, "Light snow showers") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Moderate or heavy snow showers") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Light showers of ice pellets") == 0) {
-       strcpy(weather_icon, "❄️"); }
+        strcpy(weather_icon, "❄️"); }
     else if (strcmp(weather_condition, "Moderate or heavy showers of ice pellets") == 0) {
-       strcpy(weather_icon, "❄️"); }
-    else if (strcmp(weather_condition, "Patchy light rain in areastrcpy(with thunder") == 0) {
-       strcpy(weather_icon, "🌩️"); }
-    else if (strcmp(weather_condition, "Moderate or heavy rain in areastrcpy(with thunder") == 0) {
-       strcpy(weather_icon, "🌩️"); }
-    else if (strcmp(weather_condition, "Patchy light snow in areastrcpy(with thunder") == 0) {
-       strcpy(weather_icon, "🌩️"); }
-    else if (strcmp(weather_condition, "Moderate or heavy snow in areastrcpy(with thunder") == 0) {
-       strcpy(weather_icon, "🌩️"); }
+        strcpy(weather_icon, "❄️"); }
+    else if (strcmp(weather_condition, "Patchy light rain in area strcpy(with thunder") == 0) {
+        strcpy(weather_icon, "🌩️"); }
+    else if (strcmp(weather_condition, "Moderate or heavy rain in area strcpy(with thunder") == 0) {
+        strcpy(weather_icon, "🌩️"); }
+    else if (strcmp(weather_condition, "Patchy light snow in area strcpy(with thunder") == 0) {
+        strcpy(weather_icon, "🌩️"); }
+    else if (strcmp(weather_condition, "Moderate or heavy snow in area strcpy(with thunder") == 0) {
+        strcpy(weather_icon, "🌩️"); }
+    else { // Default icon
+        strcpy(weather_icon, "🪟");
+    }
+}
+
+void wind_dir_to_arrow(char *wind_dir) {
+    char wind_dir_arrow[10];
+
+    if (strcmp(wind_dir, "N") == 0)    strcpy(wind_dir_arrow, "↑");
+    else if (strcmp(wind_dir, "NNE") == 0) strcpy(wind_dir_arrow, "↗");
+    else if (strcmp(wind_dir, "NE") == 0)  strcpy(wind_dir_arrow, "↗");
+    else if (strcmp(wind_dir, "ENE") == 0) strcpy(wind_dir_arrow, "→↗");
+    else if (strcmp(wind_dir, "E") == 0)   strcpy(wind_dir_arrow, "→");
+    else if (strcmp(wind_dir, "ESE") == 0) strcpy(wind_dir_arrow, "→↘");
+    else if (strcmp(wind_dir, "SE") == 0)  strcpy(wind_dir_arrow, "↘");
+    else if (strcmp(wind_dir, "SSE") == 0) strcpy(wind_dir_arrow, "↓↘");
+    else if (strcmp(wind_dir, "S") == 0)   strcpy(wind_dir_arrow, "↓");
+    else if (strcmp(wind_dir, "SSW") == 0) strcpy(wind_dir_arrow, "↓↙");
+    else if (strcmp(wind_dir, "SW") == 0)  strcpy(wind_dir_arrow, "↙");
+    else if (strcmp(wind_dir, "WSW") == 0) strcpy(wind_dir_arrow, "←↙");
+    else if (strcmp(wind_dir, "W") == 0)   strcpy(wind_dir_arrow, "←");
+    else if (strcmp(wind_dir, "WNW") == 0) strcpy(wind_dir_arrow, "←↖");
+    else if (strcmp(wind_dir, "NW") == 0)  strcpy(wind_dir_arrow, "↖");
+    else if (strcmp(wind_dir, "NNW") == 0) strcpy(wind_dir_arrow, "↑↖");
+
+    strcpy(wind_dir, wind_dir_arrow);
 }
 
 void change_date_fromat(char *date) {
@@ -323,6 +346,51 @@ void change_date_fromat(char *date) {
 
     snprintf(date, strlen(date)+1, "%s.%s.%s %s:%s", day, month, year, hours, minutes);
 }
+
+char* get_path_root() {
+    char* exe_path = (char*)malloc(MAX_PATH);
+    int exe_path_len = GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+    if (exe_path_len == 0) {
+        perror("Error: couldn't get the program's path."); exit(EXIT_FAILURE);
+    } else if (exe_path_len >= MAX_PATH) {
+        perror("Error: path is truncated (exe_path is too small)"); exit(EXIT_FAILURE);
+    }
+
+    /* Remove .exe file from the path */
+    int last_slash_index;
+    for (int i = 0; i < exe_path_len; i++) {
+        if (exe_path[i] == '\\') {
+            last_slash_index = i+1;
+        }
+    }
+    exe_path[last_slash_index] = '\0';
+    
+    return exe_path;
+}
+
+void save_history_data(char* weather_json) {
+    #ifdef DEBUG
+    char history_data_filename[] = "..\\history.data";
+    #else
+    char history_data_filename[] = "history.data";
+    #endif
+
+    char path_history_data[MAX_PATH];
+    snprintf(path_history_data, MAX_PATH, "%s%s", get_path_root(), history_data_filename);
+
+    FILE* history_data = fopen(path_history_data, "a");
+    if (history_data == NULL) {perror("Failed to create history.data"); exit(EXIT_FAILURE);}
+
+    // char weather_data_entry[entry_len];
+
+    // TODO: append data to the file
+
+    fclose(history_data);
+}
+
+void load_history_data() {
+}
+
 
 #define PVR_JSONP_IMPLEMENTATION
 #include "../libs/pvrlib_jsonp/pvr_jsonp.h"
