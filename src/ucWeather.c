@@ -17,8 +17,8 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
 void define_weather_icon(char *weather_condition, char *weather_icon);
 void change_date_fromat(char *date);
 void wind_dir_to_arrow(char *wind_dir);
-void save_history_data(char* weather_json);
-void load_history_data();
+void save_history_json(char* weather_json);
+void load_history_json();
 char* get_path_root();
 
 
@@ -26,11 +26,11 @@ char* get_path_root();
 int main(int argc, char *argv[]) {   
     char API[50];
     char URL[200];
-    char name_country[30] = "New York";
+    char city_name[30] = "New York";
 
-    if (argc > 1) {strcpy(name_country, argv[1]);}
+    if (argc > 1) {strcpy(city_name, argv[1]);}
 
-    strcpy(name_country, PVR_replace(name_country, ' ', '_'));
+    strcpy(city_name, PVR_replace(city_name, ' ', '_'));
 
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     fread(API, 50, 1, file_api);
     strcpy(API, PVR_replace(API, '\n', '\0'));
 
-    snprintf(URL, 200, "%s%s%s%s", "http://api.weatherapi.com/v1/current.json?key=", API, "&q=", name_country);
+    snprintf(URL, 200, "%s%s%s%s", "http://api.weatherapi.com/v1/current.json?key=", API, "&q=", city_name);
 
     /* SEND HTTP REQUEST ============================================================================== */
     CURL *curl;
@@ -195,7 +195,7 @@ size_t write_callback(char *response, size_t size, size_t nmemb, void *userdata)
 
 
     /* UPDATE HISTORY FILE */
-    // save_history_data();
+    // save_history_json();
 
     return nmemb;
 }
@@ -368,27 +368,45 @@ char* get_path_root() {
     return exe_path;
 }
 
-void save_history_data(char* weather_json) {
+void save_history_json(char* weather_json) {
     #ifdef DEBUG
-    char history_data_filename[] = "..\\history.data";
+    char history_json_filename[] = "..\\history.json";
     #else
-    char history_data_filename[] = "history.data";
+    char history_json_filename[] = "history.json";
     #endif
 
-    char path_history_data[MAX_PATH];
-    snprintf(path_history_data, MAX_PATH, "%s%s", get_path_root(), history_data_filename);
+    char path_history_json[MAX_PATH];
+    snprintf(path_history_json, MAX_PATH, "%s%s", get_path_root(), history_json_filename);
 
-    FILE* history_data = fopen(path_history_data, "a");
-    if (history_data == NULL) {perror("Failed to create history.data"); exit(EXIT_FAILURE);}
+    /* Check if the file exists */
+    bool file_exists = false;
+    if (FILE *fp = fopen(path_history_json, "r")) {
+        file_exists = true;
+        fclose(fp);
+    }
 
-    // char weather_data_entry[entry_len];
+    FILE *history_json = fopen(path_history_json, "a");
+    if (history_json == NULL) {perror("Failed to create history.json"); exit(EXIT_FAILURE);}
+
+    fseek(history_json, 0, SEEK_END);
+    size_t history_json_size = ftell(history_json);
+
+    // char buffer_history_json[history_json_size];
+    size_t date_size = strlen(PVR_json_get_value(weather_json, "last_updated"));
+    char date_last_update[date_size];
+    size_t wd_entry_size = date_size + strlen(weather_json) + 5; // number is for additional symbols (:,}\0)
+    char weather_data_entry[history_json_size];
+
+    // fread(buffer_history_json, 1, history_json_size, history_json);
+    strcpy(date_last_update, PVR_json_get_value(weather_json, "last_updated"));
+    snprintf(weather_data_entry, history_json_size + wd_entry_size, ", %s:%s\n}", date_last_update, weather_json);
 
     // TODO: append data to the file
 
-    fclose(history_data);
+    fclose(history_json);
 }
 
-void load_history_data() {
+void load_history_json() {
 }
 
 
